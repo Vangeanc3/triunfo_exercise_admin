@@ -34,6 +34,7 @@ export type ExerciseDefinition = {
 export type ExerciseDocument = {
   id: string;
   name: string;
+  isActive?: boolean;
   imageUrl: string;
   regions?: Array<{ id: string; name: string }>;
   exercises: ExerciseDefinition[];
@@ -44,4 +45,5 @@ export type ExerciseDocumentOption = {
   label: string;
   category: string;
   imageUrl?: string;
+  isActive?: boolean;
 };

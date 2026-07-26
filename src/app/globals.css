@@ -1,15 +1,19 @@
 :root {
   color-scheme: light;
-  --background: #f5f7f8;
+  --background: #f8fafc;
   --surface: #ffffff;
-  --surface-muted: #eef2f4;
-  --border: #d9e1e5;
-  --text: #142026;
-  --muted: #667781;
-  --accent: #13795b;
-  --accent-strong: #0d5d46;
-  --danger: #a33a32;
-  --shadow: 0 10px 30px rgba(12, 31, 39, 0.08);
+  --surface-muted: #f1f5f9;
+  --border: #e2e8f0;
+  --text: #0f172a;
+  --muted: #64748b;
+  --accent: #059669;
+  --accent-strong: #047857;
+  --danger: #e11d48;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --radius: 12px;
+  --radius-sm: 8px;
 }
 
 * {
@@ -57,8 +61,9 @@ button:disabled {
   justify-content: space-between;
   gap: 16px;
   border-bottom: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.96);
-  padding: 16px 24px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  padding: 12px 24px;
 }
 
 .topbar .brand {
@@ -114,6 +119,43 @@ button:disabled {
   gap: 14px;
 }
 
+.category-card-wrapper {
+  position: relative;
+}
+
+.category-action-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--muted);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-sm);
+}
+
+.category-action-button:hover {
+  background: var(--surface-muted);
+  color: var(--text);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+.category-action-button.active {
+  color: var(--accent);
+}
+
+.category-action-button.inactive {
+  color: var(--muted);
+}
+
 .category-card,
 .document-card,
 .exercise-card {
@@ -122,24 +164,47 @@ button:disabled {
   gap: 8px;
   min-height: 118px;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: var(--surface);
   color: var(--text);
-  padding: 16px;
+  padding: 20px;
   text-align: left;
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .category-card:hover,
 .document-card:hover,
 .exercise-card:hover {
   border-color: var(--accent);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.category-card.inactive,
+.document-card.inactive,
+.exercise-card.inactive {
+  opacity: 0.65;
+  background: var(--surface-muted);
+  filter: grayscale(0.4);
+}
+
+.category-card.inactive:hover,
+.document-card.inactive:hover,
+.exercise-card.inactive:hover {
+  opacity: 0.9;
+  filter: grayscale(0);
 }
 
 .category-card span,
 .document-card span,
 .exercise-card span {
-  font-weight: 700;
+  font-weight: 600;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 }
 
 .category-card small,
@@ -150,7 +215,7 @@ button:disabled {
 }
 
 .document-card {
-  min-height: 218px;
+  min-height: 228px;
   padding: 0;
   overflow: hidden;
 }
@@ -171,11 +236,11 @@ button:disabled {
 
 .document-card span,
 .document-card small {
-  margin: 0 14px;
+  margin: 0 16px;
 }
 
 .document-card small {
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .exercise-card-grid {
@@ -392,11 +457,14 @@ button:disabled {
   justify-content: center;
   gap: 8px;
   min-height: 40px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border);
   background: var(--surface);
   color: var(--text);
-  padding: 0 12px;
+  padding: 0 16px;
+  font-weight: 500;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-sm);
 }
 
 .icon-button {
@@ -410,18 +478,34 @@ button:disabled {
   color: white;
 }
 
-.secondary-button {
-  background: var(--surface);
+.primary-button:hover:not(:disabled) {
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+.secondary-button:hover:not(:disabled),
+.icon-button:hover:not(:disabled) {
+  background: var(--surface-muted);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+.primary-button:active:not(:disabled),
+.secondary-button:active:not(:disabled),
+.icon-button:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .image-field {
   display: grid;
-  gap: 8px;
+  gap: 12px;
 }
 
 .image-actions {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
   gap: 8px;
 }
 
@@ -431,13 +515,26 @@ button:disabled {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 36px;
-  border-radius: 6px;
+  min-height: 38px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border);
   background: var(--surface);
   color: var(--text);
-  padding: 0 11px;
+  padding: 0 14px;
   font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
+  box-shadow: var(--shadow-sm);
+}
+
+.file-button:hover:not(.disabled) {
+  border-color: var(--accent);
+  background: var(--surface-muted);
+}
+
+.danger-button:hover:not(:disabled) {
+  border-color: var(--danger);
+  background: #fff1f2;
 }
 
 .file-button {
@@ -457,7 +554,8 @@ button:disabled {
 }
 
 .danger-button {
-  border-color: #e3c5c1;
+  border-color: #fee2e2;
+  background: #fef2f2;
   color: var(--danger);
 }
 
@@ -479,21 +577,22 @@ button:disabled {
 
 .confirm-dialog {
   display: grid;
-  gap: 14px;
+  gap: 20px;
   width: min(440px, 100%);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: var(--surface);
-  padding: 18px;
-  box-shadow: var(--shadow);
+  padding: 24px;
+  box-shadow: var(--shadow-md);
 }
 
 .confirm-dialog-title {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   color: var(--danger);
   font-weight: 700;
+  font-size: 18px;
 }
 
 .confirm-dialog p {
@@ -511,14 +610,49 @@ button:disabled {
 .notice,
 .empty-state {
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius);
   background: var(--surface);
-  padding: 12px 14px;
-  margin-bottom: 16px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.empty-state {
+.notice {
+  border-left: 4px solid var(--accent);
+}
+
+.page-notice {
+  margin-top: 24px;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--surface-muted);
   color: var(--muted);
+  border: 1px solid var(--border);
+}
+
+.status-badge.small {
+  padding: 1px 6px;
+  font-size: 10px;
+}
+
+.category-card.inactive .status-badge,
+.document-card.inactive .status-badge,
+.exercise-card.inactive .status-badge {
+  background: #fef2f2;
+  color: #ef4444;
+  border-color: #fee2e2;
 }
 
 .editor-grid {
@@ -529,12 +663,12 @@ button:disabled {
 
 .panel {
   display: grid;
-  gap: 14px;
+  gap: 20px;
   align-content: start;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: var(--surface);
-  padding: 16px;
+  padding: 24px;
   box-shadow: var(--shadow);
 }
 
@@ -576,11 +710,34 @@ button:disabled {
 .field textarea {
   width: 100%;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   outline: none;
   background: var(--surface);
   color: var(--text);
-  padding: 10px 11px;
+  padding: 10px 14px;
+  transition: all 0.2s;
+  box-shadow: var(--shadow-sm);
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+}
+
+.checkbox-field {
+  flex-direction: row;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-field input {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--accent);
 }
 
 .field textarea {

@@ -1,9 +1,14 @@
 'use client';
 
 import {
+  AlertCircle,
   ArrowLeft,
+  Check,
+  CheckCircle2,
   Database,
   Dumbbell,
+  Eye,
+  EyeOff,
   FolderOpen,
   Image as ImageIcon,
   ListChecks,
@@ -112,6 +117,7 @@ export function ExerciseAdmin() {
   const [selectedVariationIndex, setSelectedVariationIndex] = useState(0);
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'saving'>('idle');
+  const [busyCategories, setBusyCategories] = useState<Set<string>>(new Set());
   const [mediaBusyKey, setMediaBusyKey] = useState('');
   const [deleteConfirmation, setDeleteConfirmation] =
     useState<DeleteConfirmation | null>(null);
@@ -128,19 +134,25 @@ export function ExerciseAdmin() {
   }, [documentId, documentOptions]);
 
   const groupedDocumentOptions = useMemo(() => {
-    return documentOptions.reduce<Record<string, ExerciseDocumentOption[]>>(
-      (groups, option) => {
-        const key = option.category.toLowerCase();
-        groups[key] = [...(groups[key] ?? []), option];
-        return groups;
-      },
-      {},
-    );
+    return documentOptions.reduce<
+      Record<string, { options: ExerciseDocumentOption[]; allInactive: boolean }>
+    >((groups, option) => {
+      const key = option.category.toLowerCase();
+      if (!groups[key]) {
+        groups[key] = { options: [], allInactive: true };
+      }
+      groups[key].options.push(option);
+      if (option.isActive !== false) {
+        groups[key].allInactive = false;
+      }
+      return groups;
+    }, {});
   }, [documentOptions]);
 
-  const selectedCategoryOptions = selectedCategory
-    ? (groupedDocumentOptions[selectedCategory] ?? [])
-    : [];
+  const selectedCategoryData = selectedCategory
+    ? groupedDocumentOptions[selectedCategory]
+    : null;
+  const selectedCategoryOptions = selectedCategoryData?.options ?? [];
   const selectedCategoryLabel =
     categoryLabels[selectedCategory] ?? selectedCategory;
 
@@ -212,7 +224,12 @@ export function ExerciseAdmin() {
       setDocumentOptions((current) =>
         current.map((option) =>
           option.id === documentId
-            ? { ...option, imageUrl: syncedDraft.imageUrl, label: syncedDraft.name }
+            ? {
+                ...option,
+                imageUrl: syncedDraft.imageUrl,
+                label: syncedDraft.name,
+                isActive: syncedDraft.isActive,
+              }
             : option,
         ),
       );
@@ -430,6 +447,59 @@ export function ExerciseAdmin() {
     }
   }
 
+  async function toggleCategoryActive(category: string, active: boolean) {
+    const options = groupedDocumentOptions[category]?.options ?? [];
+    if (options.length === 0) return;
+
+    const label = categoryLabels[category] ?? category;
+    if (
+      !confirm(
+        `${active ? 'Ativar' : 'Desativar'} todos os ${options.length} subgrupos em ${label}?`,
+      )
+    ) {
+      return;
+    }
+
+    setBusyCategories((prev) => {
+      const next = new Set(prev);
+      next.add(category);
+      return next;
+    });
+    setMessage(`Atualizando categoria ${label}...`);
+
+    try {
+      for (const option of options) {
+        if (option.isActive === active) continue;
+
+        const data = await fetchExerciseDocument(option.id);
+        data.isActive = active;
+        await saveExerciseDocument(option.id, data);
+      }
+
+      setDocumentOptions((current) =>
+        current.map((opt) =>
+          opt.category.toLowerCase() === category.toLowerCase()
+            ? { ...opt, isActive: active }
+            : opt,
+        ),
+      );
+
+      setMessage(
+        `Categoria ${label} ${active ? 'ativada' : 'desativada'} com sucesso.`,
+      );
+    } catch (error) {
+      setMessage(
+        `Erro ao atualizar categoria: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
+      );
+    } finally {
+      setBusyCategories((prev) => {
+        const next = new Set(prev);
+        next.delete(category);
+        return next;
+      });
+    }
+  }
+
   function openCategory(category: string) {
     setSelectedCategory(category);
     setDocumentId('');
@@ -535,27 +605,60 @@ export function ExerciseAdmin() {
         </div>
       </header>
 
-      {message ? <div className="notice page-notice">{message}</div> : null}
+      {message ? (
+        <div className="notice page-notice">
+          {message.includes('Erro') ? (
+            <AlertCircle size={18} style={{ color: 'var(--danger)' }} />
+          ) : (
+            <CheckCircle2 size={18} style={{ color: 'var(--accent)' }} />
+          )}
+          <span>{message}</span>
+        </div>
+      ) : null}
 
       {screen === 'categories' ? (
         <section className="screen-content">
           <div className="screen-heading">
-            <h1>Categorias</h1>
+            <h1>Grupos</h1>
           </div>
 
           <div className="category-card-grid">
-            {Object.entries(groupedDocumentOptions).map(([category, options]) => (
-              <button
-                className="category-card"
-                key={category}
-                onClick={() => openCategory(category)}
-                type="button"
-              >
-                <FolderOpen size={24} />
-                <span>{categoryLabels[category] ?? category}</span>
-                <small>{options.length} grupos</small>
-              </button>
-            ))}
+            {Object.entries(groupedDocumentOptions).map(
+              ([category, { options, allInactive }]) => (
+                <div key={category} className="category-card-wrapper">
+                  <button
+                    className={`category-card ${allInactive ? 'inactive' : ''}`}
+                    onClick={() => openCategory(category)}
+                    type="button"
+                  >
+                    <FolderOpen size={24} />
+                    <span>
+                      {categoryLabels[category] ?? category}
+                      <StatusBadge active={!allInactive} small />
+                    </span>
+                    <small>{options.length} grupos</small>
+                  </button>
+                  <button
+                    className={`category-action-button ${allInactive ? 'inactive' : 'active'}`}
+                    disabled={busyCategories.has(category)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleCategoryActive(category, allInactive);
+                    }}
+                    title={allInactive ? 'Ativar tudo' : 'Desativar tudo'}
+                    type="button"
+                  >
+                    {busyCategories.has(category) ? (
+                      <Loader2 className="spin" size={16} />
+                    ) : allInactive ? (
+                      <EyeOff size={16} />
+                    ) : (
+                      <Eye size={16} />
+                    )}
+                  </button>
+                </div>
+              ),
+            )}
           </div>
         </section>
       ) : null}
@@ -563,13 +666,13 @@ export function ExerciseAdmin() {
       {screen === 'documents' ? (
         <section className="screen-content">
           <div className="screen-heading">
-            <h1>{selectedCategoryLabel}</h1>
+            <h1>{selectedCategoryLabel} (Subgrupos)</h1>
           </div>
 
           <div className="document-card-grid">
             {selectedCategoryOptions.map((option) => (
               <button
-                className="document-card"
+                className={`document-card ${option.isActive === false ? 'inactive' : ''}`}
                 key={option.id}
                 onClick={() => openDocument(option)}
                 type="button"
@@ -582,7 +685,10 @@ export function ExerciseAdmin() {
                     <Dumbbell size={26} />
                   </div>
                 )}
-                <span>{option.label}</span>
+                <span>
+                  {option.label}
+                  <StatusBadge active={option.isActive !== false} />
+                </span>
                 <small>{option.id}</small>
               </button>
             ))}
@@ -613,12 +719,12 @@ export function ExerciseAdmin() {
           </div>
 
           <div className="search-box screen-search">
-            <Search size={16} />
+            <Search size={18} />
             <input
               disabled={!draft}
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Buscar exercício"
+              placeholder="Buscar exercícios por nome, músculo ou equipamento..."
             />
           </div>
 
@@ -631,7 +737,9 @@ export function ExerciseAdmin() {
                   onClick={() => openExercise(exercise)}
                   type="button"
                 >
-                  <span>{exercise.name}</span>
+                  <span>
+                    {exercise.name}
+                  </span>
                   <small>
                     {exercise.id}
                     {hasVariations(exercise) ? ` · ${exercise.variations?.length} variações` : ''}
@@ -661,9 +769,10 @@ export function ExerciseAdmin() {
             <section className="panel">
               <div className="panel-title">
                 <ListChecks size={18} />
-                Documento
+                Subgrupo
               </div>
-              <TextField label="Nome do grupo muscular" value={draft.name} onChange={(name) => updateDocument({ name })} />
+              <TextField label="Nome do subgrupo muscular" value={draft.name} onChange={(name) => updateDocument({ name })} />
+              <CheckboxField label="Subgrupo ativo no aplicativo" value={draft.isActive !== false} onChange={(isActive) => updateDocument({ isActive })} />
             </section>
 
             <section className="panel">
@@ -917,6 +1026,37 @@ function ImageField({
         </button>
       </div>
     </div>
+  );
+}
+
+function StatusBadge({ active, small }: { active: boolean; small?: boolean }) {
+  if (active) return null;
+  return <span className={`status-badge ${small ? 'small' : ''}`}>Inativo</span>;
+}
+
+function CheckboxField({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: boolean;
+  onChange: (value: boolean) => void;
+}) {
+  return (
+    <label className="field checkbox-field">
+      <input
+        checked={value}
+        type="checkbox"
+        onChange={(event) => onChange(event.target.checked)}
+      />
+      <span>{label}</span>
+      {value ? (
+        <Check size={14} style={{ color: 'var(--accent)', marginLeft: 'auto' }} />
+      ) : (
+        <EyeOff size={14} style={{ color: 'var(--muted)', marginLeft: 'auto' }} />
+      )}
+    </label>
   );
 }
 
