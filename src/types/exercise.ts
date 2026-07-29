@@ -7,7 +7,6 @@ export type ExerciseVariation = {
   description: string;
   imageUrl: string;
   videoUrl: string;
-  equipment: string[];
   tips: string[];
   attributes?: Record<string, unknown>;
 };
@@ -21,13 +20,11 @@ export type ExerciseDefinition = {
   region: string;
   primaryMuscles: string[];
   secondaryMuscles: string[];
-  equipment?: string[];
   level: ExerciseLevel;
   mechanic: string;
   tips?: string[];
   commonMistakes: string[];
   stimulus: string;
-  exerciseType: string;
   variations?: ExerciseVariation[];
 };
 

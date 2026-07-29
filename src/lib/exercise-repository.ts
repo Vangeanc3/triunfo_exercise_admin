@@ -81,3 +81,9 @@ export async function deleteExerciseImage(imageUrl: string) {
     { method: 'DELETE' },
   );
 }
+
+export async function publishExerciseConfig() {
+  return requestJson<{ message: string }>('/config/upload', {
+    method: 'POST',
+  });
+}

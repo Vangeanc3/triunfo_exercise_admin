@@ -27,6 +27,7 @@ import {
   deleteExerciseImage,
   fetchExerciseDocument,
   fetchExerciseDocumentOptions,
+  publishExerciseConfig,
   saveExerciseDocument,
   uploadExerciseImage,
 } from '@/lib/exercise-repository';
@@ -40,7 +41,6 @@ import type {
 const levels = ['beginner', 'intermediate', 'advanced'];
 const mechanics = ['compound', 'isolation'];
 const stimulusOptions = ['lengthened', 'mid', 'shortened', 'isometric'];
-const exerciseTypes = ['standard', 'method', 'bodyweight'];
 type ImageTarget = 'document' | 'exercise' | 'variation';
 type DeleteConfirmation = {
   title: string;
@@ -70,6 +70,10 @@ function parseLines(value: string) {
 
 function formatLines(values?: string[]) {
   return values?.join('\n') ?? '';
+}
+
+function getErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback;
 }
 
 function hasVariations(exercise: ExerciseDefinition) {
@@ -118,6 +122,7 @@ export function ExerciseAdmin() {
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'saving'>('idle');
   const [busyCategories, setBusyCategories] = useState<Set<string>>(new Set());
+  const [publishingConfig, setPublishingConfig] = useState(false);
   const [mediaBusyKey, setMediaBusyKey] = useState('');
   const [deleteConfirmation, setDeleteConfirmation] =
     useState<DeleteConfirmation | null>(null);
@@ -167,12 +172,10 @@ export function ExerciseAdmin() {
         exercise.name,
         ...exercise.primaryMuscles,
         ...exercise.secondaryMuscles,
-        ...(exercise.equipment ?? []),
         ...(exercise.variations ?? []).flatMap((variation) => [
           variation.id,
           variation.name,
           variation.displayName,
-          ...variation.equipment,
         ]),
       ];
 
@@ -212,6 +215,24 @@ export function ExerciseAdmin() {
     }
   }
 
+  async function publishConfigToApp() {
+    try {
+      setPublishingConfig(true);
+      setMessage('Publicando configuração no app...');
+
+      const result = await publishExerciseConfig();
+
+      setMessage(result.message || 'Configuração publicada no app.');
+    } catch (error) {
+      const errorMessage = getErrorMessage(error, 'Erro desconhecido');
+      setMessage(`Erro ao publicar config: ${errorMessage}`);
+
+      throw error;
+    } finally {
+      setPublishingConfig(false);
+    }
+  }
+
   async function saveDocument() {
     if (!draft) return;
 
@@ -233,9 +254,12 @@ export function ExerciseAdmin() {
             : option,
         ),
       );
-      setMessage(`Documento ${documentId} salvo nos assets pelo backend.`);
+      setMessage(
+        `Documento ${documentId} salvo. Clique em "Publicar no app" para enviar ao aplicativo.`,
+      );
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'Erro ao salvar documento.');
+      const errorMessage = getErrorMessage(error, 'Erro ao salvar documento.');
+      setMessage(errorMessage);
     } finally {
       setStatus('idle');
     }
@@ -359,7 +383,6 @@ export function ExerciseAdmin() {
             description: selectedVariation.description,
             imageUrl: selectedVariation.imageUrl,
             videoUrl: selectedVariation.videoUrl,
-            equipment: selectedVariation.equipment,
             tips: selectedVariation.tips,
           };
         }),
@@ -467,6 +490,8 @@ export function ExerciseAdmin() {
     });
     setMessage(`Atualizando categoria ${label}...`);
 
+    let savedDocuments = false;
+
     try {
       for (const option of options) {
         if (option.isActive === active) continue;
@@ -474,6 +499,7 @@ export function ExerciseAdmin() {
         const data = await fetchExerciseDocument(option.id);
         data.isActive = active;
         await saveExerciseDocument(option.id, data);
+        savedDocuments = true;
       }
 
       setDocumentOptions((current) =>
@@ -485,11 +511,14 @@ export function ExerciseAdmin() {
       );
 
       setMessage(
-        `Categoria ${label} ${active ? 'ativada' : 'desativada'} com sucesso.`,
+        `Categoria ${label} ${active ? 'ativada' : 'desativada'} nos JSONs. Clique em "Publicar no app" para enviar ao aplicativo.`,
       );
     } catch (error) {
+      const errorMessage = getErrorMessage(error, 'Erro desconhecido');
       setMessage(
-        `Erro ao atualizar categoria: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
+        savedDocuments
+          ? `Categoria ${label} parcialmente atualizada nos JSONs: ${errorMessage}`
+          : `Erro ao atualizar categoria: ${errorMessage}`,
       );
     } finally {
       setBusyCategories((prev) => {
@@ -564,6 +593,24 @@ export function ExerciseAdmin() {
         </div>
 
         <div className="topbar-actions">
+          <button
+            className="secondary-button"
+            disabled={
+              publishingConfig ||
+              status !== 'idle' ||
+              Boolean(mediaBusyKey) ||
+              busyCategories.size > 0
+            }
+            onClick={() => void publishConfigToApp()}
+            type="button"
+          >
+            {publishingConfig ? (
+              <Loader2 className="spin" size={18} />
+            ) : (
+              <Upload size={18} />
+            )}
+            Publicar no app
+          </button>
           {screen !== 'categories' ? (
             <button className="secondary-button" onClick={goBack} type="button">
               <ArrowLeft size={18} />
@@ -724,7 +771,7 @@ export function ExerciseAdmin() {
               disabled={!draft}
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Buscar exercícios por nome, músculo ou equipamento..."
+              placeholder="Buscar exercícios por nome ou músculo..."
             />
           </div>
 
@@ -810,7 +857,6 @@ export function ExerciseAdmin() {
                 <SelectField label="Mechanic" options={mechanics} value={selectedExercise.mechanic} onChange={(mechanic) => updateExercise({ mechanic })} />
                 <SelectField label="Stimulus" options={stimulusOptions} value={selectedExercise.stimulus} onChange={(stimulus) => updateExercise({ stimulus })} />
               </div>
-              <SelectField label="Tipo" options={exerciseTypes} value={selectedExercise.exerciseType} onChange={(exerciseType) => updateExercise({ exerciseType })} />
               <ArrayField label="Músculos primários" value={selectedExercise.primaryMuscles} onChange={(primaryMuscles) => updateExercise({ primaryMuscles })} />
               <ArrayField label="Músculos secundários" value={selectedExercise.secondaryMuscles} onChange={(secondaryMuscles) => updateExercise({ secondaryMuscles })} />
               <ArrayField label="Erros comuns" value={selectedExercise.commonMistakes} onChange={(commonMistakes) => updateExercise({ commonMistakes })} />
@@ -893,7 +939,6 @@ export function ExerciseAdmin() {
                   />
                   <TextField label="Vídeo" value={selectedVariation.videoUrl} onChange={(videoUrl) => updateVariation({ videoUrl })} />
                 </div>
-                <ArrayField label="Equipamentos" value={selectedVariation.equipment} onChange={(equipment) => updateVariation({ equipment })} />
                 <ArrayField label="Dicas" value={selectedVariation.tips} onChange={(tips) => updateVariation({ tips })} />
               </section>
             ) : (
@@ -921,7 +966,6 @@ export function ExerciseAdmin() {
                   />
                   <TextField label="Vídeo" value={selectedExercise.videoUrl ?? ''} onChange={(videoUrl) => updateExercise({ videoUrl })} />
                 </div>
-                <ArrayField label="Equipamentos" value={selectedExercise.equipment ?? []} onChange={(equipment) => updateExercise({ equipment })} />
                 <ArrayField label="Dicas" value={selectedExercise.tips ?? []} onChange={(tips) => updateExercise({ tips })} />
               </section>
             )}
