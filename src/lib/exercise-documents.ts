@@ -8,6 +8,7 @@ export const exerciseDocuments: ExerciseDocumentOption[] = [
   { id: 'upper_biceps', label: 'Bíceps', category: 'upper' },
   { id: 'upper_triceps', label: 'Tríceps', category: 'upper' },
   { id: 'upper_forearms', label: 'Antebraços', category: 'upper' },
+  { id: 'lower_compounds', label: 'Compostos', category: 'lower' },
   { id: 'lower_quadriceps', label: 'Quadríceps', category: 'lower' },
   { id: 'lower_hamstrings', label: 'Posteriores', category: 'lower' },
   { id: 'lower_glutes', label: 'Glúteos', category: 'lower' },

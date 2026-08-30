@@ -1,0 +1,71 @@
+    {
+      "id": "HAM013",
+      "name": "Stiff Leg Deadlift",
+      "region": "full",
+      "primaryMuscles": [
+        "hamstrings",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "lower_back",
+        "traps"
+      ],
+      "level": "advanced",
+      "mechanic": "compound",
+      "commonMistakes": [
+        "Manter os joelhos completamente travados causando estresse articular excessivo",
+        "Arredondar demais a lombar ao descer alem da mobilidade disponivel",
+        "Nao distinguir do RDL — no stiff os joelhos ficam quase estendidos"
+      ],
+      "stimulus": "lengthened",
+      "variations": [
+        {
+          "id": "standard",
+          "name": "Padrão",
+          "displayName": "Stiff Leg Deadlift",
+          "description": "Com joelhos quase estendidos, realize a dobradiça de quadril enfatizando alongamento dos posteriores.",
+          "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Stiff-Legged_Barbell_Deadlift/0.jpg",
+          "videoUrl": "",
+          "tips": [
+            "Use joelhos levemente destravados",
+            "Desça apenas até onde mantém coluna neutra",
+            "Mantenha a barra próxima ao corpo"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "HAM014",
+      "name": "Good Morning",
+      "region": "full",
+      "primaryMuscles": [
+        "hamstrings",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "lower_back"
+      ],
+      "level": "advanced",
+      "mechanic": "compound",
+      "commonMistakes": [
+        "Usar carga muito pesada que forca o arredondamento da lombar",
+        "Inclinar o tronco alem da amplitude segura de mobilidade disponivel",
+        "Dobrar os joelhos excessivamente, perdendo o foco nos posteriores"
+      ],
+      "stimulus": "lengthened",
+      "variations": [
+        {
+          "id": "standard",
+          "name": "Padrão",
+          "displayName": "Good Morning",
+          "description": "Com barra nas costas, incline o tronco empurrando o quadril para trás e retorne mantendo coluna neutra.",
+          "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Good_Morning/0.jpg",
+          "videoUrl": "",
+          "tips": [
+            "Mantenha o controle durante toda a repetição",
+            "Priorize amplitude sem perder postura",
+            "Evite usar impulso para completar o movimento"
+          ]
+        }
+      ]
+    },

@@ -1,0 +1,145 @@
+    },
+    {
+      "id": "GLU001",
+      "name": "Hip Thrust",
+      "region": "gluteus_maximus",
+      "primaryMuscles": [
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "hamstrings",
+        "core"
+      ],
+      "level": "beginner",
+      "mechanic": "compound",
+      "commonMistakes": [
+        "Arquear a lombar no topo",
+        "Apoiar os pés longe demais",
+        "Subir sem controlar a pelve"
+      ],
+      "stimulus": "shortened",
+      "variations": [
+        {
+          "id": "standard",
+          "name": "Padrão",
+          "displayName": "Hip Thrust",
+          "description": "Com as costas apoiadas em um banco, eleve o quadril até alinhar tronco e coxas, contraindo os glúteos no topo.",
+          "imageUrl": "https://firebasestorage.googleapis.com/v0/b/triunfo-fitness-flutter.appspot.com/o/exercises%2Flower%2Fglutes%2Fhip-thrust%2Fpadrao.webp?alt=media&token=e5f0aec8-fd9e-4c9b-a1c4-7716c1121317",
+          "videoUrl": "",
+          "tips": [
+            "Mantenha o queixo levemente recolhido",
+            "Contraia os glúteos no topo",
+            "Evite hiperestender a lombar"
+          ]
+        },
+        {
+          "id": "com_barra",
+          "name": "Com Barra",
+          "displayName": "Hip Thrust com Barra",
+          "description": "Com a barra apoiada sobre o quadril e as costas no banco, eleve o quadril contraindo fortemente os glúteos.",
+          "imageUrl": "https://firebasestorage.googleapis.com/v0/b/triunfo-fitness-flutter.appspot.com/o/exercises%2Flower%2Fglutes%2Fhip-thrust%2Fcom-barra.jpg?alt=media&token=d576fe08-4abd-448e-b164-86ee33c081d0",
+          "videoUrl": "",
+          "tips": [
+            "Use proteção na barra para conforto",
+            "Mantenha canelas próximas da vertical no topo",
+            "Pause brevemente no topo da contração"
+          ]
+        },
+        {
+          "id": "no_smith",
+          "name": "No Smith",
+          "displayName": "Hip Thrust no Smith",
+          "description": "No Smith, posicione a barra sobre o quadril e execute o hip thrust com trajetória guiada.",
+          "imageUrl": "https://firebasestorage.googleapis.com/v0/b/triunfo-fitness-flutter.appspot.com/o/exercises%2Flower%2Fglutes%2Fhip-thrust%2Fno-smith.webp?alt=media&token=4685c7ad-44c9-441d-8d5d-26e20a589e8f",
+          "videoUrl": "",
+          "tips": [
+            "Ajuste o banco e a barra antes de começar",
+            "Mantenha os pés firmes no chão",
+            "Controle a descida"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GLU005",
+      "name": "Glute Bridge",
+      "region": "gluteus_maximus",
+      "primaryMuscles": [
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "hamstrings",
+        "core"
+      ],
+      "level": "beginner",
+      "mechanic": "compound",
+      "commonMistakes": [
+        "Empurrar com a lombar ao inves dos gluteos para elevar o quadril",
+        "Nao ativar os gluteos antes de iniciar, deixando os posteriores dominarem",
+        "Fazer amplitude curta sem atingir o alinhamento joelhos-quadril-ombros"
+      ],
+      "stimulus": "shortened",
+      "variations": [
+        {
+          "id": "standard",
+          "name": "Padrão",
+          "displayName": "Glute Bridge",
+          "description": "Deitado no chão com joelhos flexionados, eleve o quadril até contrair os glúteos no topo.",
+          "imageUrl": "https://firebasestorage.googleapis.com/v0/b/triunfo-fitness-flutter.appspot.com/o/exercises%2Flower%2Fglutes%2Fglute-bridge%2Fpadrao.jpg?alt=media&token=ed9b15bd-b466-4d13-87df-6579fe65ef52",
+          "videoUrl": "",
+          "tips": [
+            "Pressione o chão com os calcanhares",
+            "Mantenha costelas baixas",
+            "Contraia os glúteos no topo"
+          ]
+        },
+        {
+          "id": "com_barra",
+          "name": "Com Barra",
+          "displayName": "Glute Bridge com Barra",
+          "description": "Deitado no chão com uma barra sobre o quadril, eleve o quadril contraindo os glúteos.",
+          "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Glute_Bridge/0.jpg",
+          "videoUrl": "",
+          "tips": [
+            "Mantenha o controle durante toda a repetição",
+            "Evite compensar com a lombar",
+            "Contraia fortemente os glúteos"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GLU010",
+      "name": "Reverse Hyperextension",
+      "region": "gluteus_maximus",
+      "primaryMuscles": [
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "hamstrings",
+        "lower_back"
+      ],
+      "level": "intermediate",
+      "mechanic": "compound",
+      "commonMistakes": [
+        "Usar impulso das pernas ao inves de contrair os gluteos para elevar",
+        "Hiperestender a lombar no topo ao inves de manter a pelve neutra",
+        "Descer muito rapido sem controlar a fase excentrica"
+      ],
+      "stimulus": "shortened",
+      "variations": [
+        {
+          "id": "standard",
+          "name": "Padrão",
+          "displayName": "Reverse Hyperextension",
+          "description": "Na máquina ou banco, eleve as pernas para trás contraindo glúteos e posteriores, mantendo controle lombar.",
+          "imageUrl": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Reverse_Hyperextension/0.jpg",
+          "videoUrl": "",
+          "tips": [
+            "Evite balançar as pernas",
+            "Contraia os glúteos no topo",
+            "Mantenha abdômen apoiado"
+          ]
+        }
+      ]
+    }

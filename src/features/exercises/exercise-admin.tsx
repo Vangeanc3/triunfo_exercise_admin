@@ -777,22 +777,35 @@ export function ExerciseAdmin() {
 
           {draft ? (
             <div className="exercise-card-grid">
-              {filteredExercises.map((exercise) => (
-                <button
-                  className="exercise-card"
-                  key={exercise.id}
-                  onClick={() => openExercise(exercise)}
-                  type="button"
-                >
-                  <span>
-                    {exercise.name}
-                  </span>
-                  <small>
-                    {exercise.id}
-                    {hasVariations(exercise) ? ` · ${exercise.variations?.length} variações` : ''}
-                  </small>
-                </button>
-              ))}
+              {filteredExercises.map((exercise) => {
+                const imageUrl = getExerciseDefaultImageUrl(exercise);
+                return (
+                  <button
+                    className="exercise-card"
+                    key={exercise.id}
+                    onClick={() => openExercise(exercise)}
+                    type="button"
+                  >
+                    {imageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img alt="" src={imageUrl} />
+                    ) : (
+                      <div className="exercise-card-placeholder">
+                        <ImageIcon size={24} />
+                      </div>
+                    )}
+                    <div className="exercise-card-content">
+                      <span>
+                        {exercise.name}
+                      </span>
+                      <small>
+                        {exercise.id}
+                        {hasVariations(exercise) ? ` · ${exercise.variations?.length} variações` : ''}
+                      </small>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           ) : (
             <div className="empty-state">Carregando exercícios.</div>
