@@ -55,7 +55,10 @@ const categoryLabels: Record<string, string> = {
   mobility: 'Mobilidade',
   stretches: 'Alongamentos',
   functional: 'Funcional',
+  cardio: 'Cardio',
 };
+
+const directExerciseCategories = new Set(['cardio']);
 
 function cloneDocument(document: ExerciseDocument): ExerciseDocument {
   return structuredClone(document);
@@ -160,6 +163,7 @@ export function ExerciseAdmin() {
   const selectedCategoryOptions = selectedCategoryData?.options ?? [];
   const selectedCategoryLabel =
     categoryLabels[selectedCategory] ?? selectedCategory;
+  const isDirectExerciseCategory = directExerciseCategories.has(selectedCategory);
 
   const filteredExercises = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -530,6 +534,13 @@ export function ExerciseAdmin() {
   }
 
   function openCategory(category: string) {
+    const options = groupedDocumentOptions[category]?.options ?? [];
+    if (directExerciseCategories.has(category) && options.length === 1) {
+      setSelectedCategory(category);
+      openDocument(options[0]);
+      return;
+    }
+
     setSelectedCategory(category);
     setDocumentId('');
     setDraft(null);
@@ -563,6 +574,17 @@ export function ExerciseAdmin() {
     }
 
     if (screen === 'exercises') {
+      if (isDirectExerciseCategory) {
+        setSelectedCategory('');
+        setDocumentId('');
+        setDraft(null);
+        setSelectedExerciseId('');
+        setSelectedVariationIndex(0);
+        setQuery('');
+        setScreen('categories');
+        return;
+      }
+
       setDocumentId('');
       setDraft(null);
       setSelectedExerciseId('');
@@ -683,7 +705,11 @@ export function ExerciseAdmin() {
                       {categoryLabels[category] ?? category}
                       <StatusBadge active={!allInactive} small />
                     </span>
-                    <small>{options.length} grupos</small>
+                    <small>
+                      {directExerciseCategories.has(category)
+                        ? 'Exercícios'
+                        : `${options.length} grupos`}
+                    </small>
                   </button>
                   <button
                     className={`category-action-button ${allInactive ? 'inactive' : 'active'}`}
@@ -748,7 +774,7 @@ export function ExerciseAdmin() {
           <div className="screen-heading with-actions">
             <div>
               <h1>{draft?.name ?? selectedDocumentOption?.label ?? 'Exercícios'}</h1>
-              <p>{documentId}</p>
+              {!isDirectExerciseCategory ? <p>{documentId}</p> : null}
             </div>
             <button
               className="icon-button"
@@ -819,7 +845,9 @@ export function ExerciseAdmin() {
             <h1>{selectedExercise?.name ?? 'Exercício'}</h1>
             <p>
               {selectedCategoryLabel}
-              {selectedDocumentOption ? ` / ${selectedDocumentOption.label}` : ''}
+              {!isDirectExerciseCategory && selectedDocumentOption
+                ? ` / ${selectedDocumentOption.label}`
+                : ''}
               {selectedExercise ? ` / ${selectedExercise.id}` : ''}
             </p>
           </div>
@@ -829,9 +857,13 @@ export function ExerciseAdmin() {
             <section className="panel">
               <div className="panel-title">
                 <ListChecks size={18} />
-                Subgrupo
+                  {isDirectExerciseCategory ? 'Catálogo' : 'Subgrupo'}
               </div>
-              <TextField label="Nome do subgrupo muscular" value={draft.name} onChange={(name) => updateDocument({ name })} />
+              <TextField
+                label={isDirectExerciseCategory ? 'Nome do catálogo' : 'Nome do subgrupo muscular'}
+                value={draft.name}
+                onChange={(name) => updateDocument({ name })}
+              />
               <CheckboxField label="Subgrupo ativo no aplicativo" value={draft.isActive !== false} onChange={(isActive) => updateDocument({ isActive })} />
             </section>
 

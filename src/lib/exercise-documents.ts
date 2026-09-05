@@ -16,4 +16,5 @@ export const exerciseDocuments: ExerciseDocumentOption[] = [
   { id: 'lower_adductors', label: 'Adutores', category: 'lower' },
   { id: 'core_abs', label: 'Abdômen', category: 'core' },
   { id: 'core_obliques', label: 'Oblíquos', category: 'core' },
+  { id: 'cardio_aerobics', label: 'Cardio', category: 'cardio' },
 ];
